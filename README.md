@@ -39,27 +39,27 @@ Built with **Node.js**, **Express**, **TypeScript** (strict mode), **PostgreSQL*
 
 ```
 src/
-  app.ts                  Express app wiring (middleware, routes, error handlers)
-  server.ts               Process entrypoint: starts HTTP server, graceful shutdown
+  app.ts                   Express app wiring (middleware, routes, error handlers)
+  server.ts                Process entrypoint: starts HTTP server, graceful shutdown
   config/
+   migrations/                Knex migrations
     env.ts                 Centralized environment config
-    db.ts                   Knex instance
-  controllers/               HTTP layer — parses req, calls services, shapes responses
-  services/                    Business logic
-  models/                       Knex query builders, one per table
+    db.ts                  Knex instance
+  controllers/             HTTP layer — parses req, calls services, shapes responses
+  services/                Business logic
+  models/                  Knex query builders, one per table
   middleware/
-    auth.ts                      JWT verification + role-based authorization
-    validate.ts                   Joi-schema request validation
-    errorHandler.ts                Centralized error handling
-  validations/                      Joi schemas
+    auth.ts                JWT verification + role-based authorization
+    validate.ts            Joi-schema request validation
+    errorHandler.ts        Centralized error handling
+  validations/             Joi schemas
   utils/
-    ApiError.ts                      Typed application error class
-    logger.ts                         Winston logger
-    pagination.ts                      Pagination helpers
-    serializers.ts                      DB row -> API response shaping
-  types/                                 Shared TS types (DB rows, DTOs, Express augmentation)
-migrations/                                Knex migrations
-seeds/                                       Demo seed data
+    ApiError.ts            Typed application error class
+    logger.ts              Winston logger
+    pagination.ts          Pagination helpers
+    serializers.ts         DB row -> API response shaping
+  types/                   Shared TS types (DB rows, DTOs, Express augmentation)
+
 knexfile.ts
 ```
 
@@ -85,7 +85,7 @@ status `active`.
 ### 1. Clone & install
 
 ```bash
-git clone <your-repo-url>
+git clone https://github/guri5405/backend2.git
 cd property-rental-backend
 npm install
 ```
@@ -139,12 +139,12 @@ The API is now available at `http://localhost:4000/api`. Check `GET /api/health`
 
 ## Scripts
 
-| Script                      | Description |
-|------------------------------|--------------|
-| `npm run dev`                | Run with ts-node + nodemon (auto-restart) |
-| `npm run build`              | Compile TypeScript to `dist/` |
-| `npm start`                  | Run the compiled build (`dist/src/server.js`) |
-| `npm run typecheck`          | `tsc --noEmit` |
+| Script                        | Description |
+|------------------------------ |--------------|
+| `npm run dev`                 | Run with ts-node + nodemon (auto-restart) |
+| `npm run build`               | Compile TypeScript to `dist/` |
+| `npm start`                   | Run the compiled build (`dist/src/server.js`) |
+| `npm run typecheck`           | `tsc --noEmit` |
 | `npm run lint`                | ESLint over `src/` |
 | `npm run migrate:make`        | Create a new migration |
 | `npm run migrate:latest`      | Run pending migrations |
@@ -162,23 +162,23 @@ Protected routes require `Authorization: Bearer <token>`.
 
 ### Auth
 
-| Method | Route               | Auth | Description |
-|--------|----------------------|------|--------------|
-| POST   | `/api/auth/register` | —    | Create an account (`name`, `email`, `password`, `role`) |
+| Method | Route                 | Auth | Description |
+|--------|---------------------- |------|--------------|
+| POST   | `/api/auth/register`  | —    | Create an account (`name`, `email`, `password`, `role`) |
 | POST   | `/api/auth/login`     | —    | Log in, returns a JWT |
 | GET    | `/api/auth/me`        | Any  | Get the current authenticated user |
 
 ### Properties
 
-| Method | Route                                | Auth      | Description |
-|--------|----------------------------------------|-----------|--------------|
-| GET    | `/api/properties`                      | —          | List properties (pagination, filters, sorting) |
-| GET    | `/api/properties/:propertyId`          | —          | Get a single property |
-| POST   | `/api/properties`                      | Landlord   | Create a property |
-| PUT    | `/api/properties/:propertyId`          | Landlord (owner) | Update a property |
-| DELETE | `/api/properties/:propertyId`          | Landlord (owner) | Delete a property |
-| POST   | `/api/properties/:propertyId/apply`    | Tenant     | Apply to a property |
-| GET    | `/api/properties/:propertyId/applications` | Landlord (owner) | View applications for a property |
+| Method | Route                                    |  Auth                | Description |
+|--------|----------------------------------------  |-----------           |--------------|
+| GET    | `/api/properties`                          | —                    | List properties (pagination, filters, sorting) |
+| GET    | `/api/properties/:propertyId`              | —                    |  Get a single property |
+| POST   | `/api/properties`                          | Landlord             | Create a property |
+| PUT    | `/api/properties/:propertyId`              | Landlord (owner)     | Update a property |
+| DELETE | `/api/properties/:propertyId`              | Landlord (owner)     | Delete a property |
+| POST   | `/api/properties/:propertyId/apply`        | Tenant               | Apply to a property |
+| GET    | `/api/properties/:propertyId/applications` | Landlord (owner)     | View applications for a property |
 
 `GET /api/properties` query params: `page`, `limit`, `minRent`, `maxRent`, `bedrooms`, `status`
 (`active`/`rented`), `sortBy` (`rentAmount`/`createdAt`/`bedrooms`/`bathrooms`/`title`),
@@ -211,18 +211,18 @@ Protected routes require `Authorization: Bearer <token>`.
 | Variable               | Default              | Notes |
 |-------------------------|-----------------------|-------|
 | `NODE_ENV`               | `development`          | `development` \| `test` \| `production` |
-| `PORT`                   | `4000`                  | |
-| `DB_HOST`                | `localhost`              | Ignored if `DATABASE_URL` is set |
-| `DB_PORT`                | `5432`                    | |
-| `DB_NAME`                | `rental_db`                 | |
-| `DB_USER`                | `rental_user`                 | |
-| `DB_PASSWORD`            | `rental_pass`                   | |
-| `DATABASE_URL`           | —                                  | Overrides the `DB_*` fields above |
-| `TEST_DB_NAME`           | `rental_db_test`                     | Used when `NODE_ENV=test` |
-| `JWT_SECRET`             | —                                       | **Required** — set a real secret |
-| `JWT_EXPIRES_IN`         | `1d`                                      | |
-| `RATE_LIMIT_WINDOW_MS`   | `900000` (15 min)                           | |
-| `RATE_LIMIT_MAX`         | `100`                                          | Requests per window per IP |
+| `PORT`                   | `4000`                 | |
+| `DB_HOST`                | `localhost`            | Ignored if `DATABASE_URL` is set |
+| `DB_PORT`                | `5432`                 | |
+| `DB_NAME`                | `rental_db`            | |
+| `DB_USER`                | `rental_user`          | |
+| `DB_PASSWORD`            | `rental_pass`          | |
+| `DATABASE_URL`           | —                      | Overrides the `DB_*` fields above |
+| `TEST_DB_NAME`           | `rental_db_test`       | Used when `NODE_ENV=test` |
+| `JWT_SECRET`             | —                      | **Required** — set a real secret |
+| `JWT_EXPIRES_IN`         | `1d`                   | |
+| `RATE_LIMIT_WINDOW_MS`   | `900000` (15 min)      | |
+| `RATE_LIMIT_MAX`         | `100`                  | Requests per window per IP |
 
 ## Testing
 
